@@ -157,7 +157,7 @@ void Timer::addTaskNode(TaskNode* node) {
     // 根据时间选择合适的时间轮
     // 按照PDF中的伪代码: if time / interval <= size
     if (time <= 0) {
-        // 立即执行的任务放到当前槽位
+        // 立即执行的任务 - 添加到当前槽位，会在本次tick中执行
         second_wheel->addTaskToSlot(node, second_wheel->current_slot);
     } else if (time / (int)second_wheel->interval <= (int)second_wheel->size) {
         // 放在秒级时间轮 (time <= 60)
@@ -165,7 +165,7 @@ void Timer::addTaskNode(TaskNode* node) {
         second_wheel->addTaskToSlot(node, slot);
     } else if (time / (int)minute_wheel->interval <= (int)minute_wheel->size) {
         // 放在分钟级时间轮 (time <= 3600)
-        // time = time + current_slot * interval，这样下放时才能正确计算位置
+        // 按照PDF伪代码,只使用minute_wheel的current_slot
         int adjusted_time = time + minute_wheel->current_slot * minute_wheel->interval;
         size_t slot = (adjusted_time / minute_wheel->interval) % minute_wheel->size;
         minute_wheel->addTaskToSlot(node, slot);
